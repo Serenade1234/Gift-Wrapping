@@ -1,11 +1,12 @@
-int defaultN = 15;
+int defaultN = 2;
 ArrayList<Point> points; 
 ArrayList<Point> vertex; //凸包の頂点がここに入る(s.t. {p0, p1,...pr,...p0})
 
 Boolean showPoints = true;
+Boolean showVertex = true;
 
 void setup(){
-    size(700, 400);
+    size(900, 600);
     init();
     smooth();
     cursor(CROSS);
@@ -22,7 +23,13 @@ void keyPressed(){
     switch(key){
         case '1':
             showPoints = !showPoints;                
-            break;	
+            break;
+        case '2':
+            showVertex = !showVertex;                
+            break;
+        case '3':
+            points.add(new Point(points.size(), random(width*0.3, width*0.7), random(height*0.2, height*0.8)));
+            break;
     }
 }
 
@@ -42,14 +49,22 @@ void show(){
         }
     }
 
-    noFill();
-    strokeWeight(1);
-    stroke(100);  
-    beginShape();
-    for(Point v: vertex){
-        vertex(v.x, v.y);
+    if(showVertex){
+        noFill();
+        strokeWeight(1);
+        stroke(100);  
+        beginShape();
+        for(Point v: vertex){
+            vertex(v.x, v.y);
+        }
+        endShape();
     }
-    endShape();
+    fill(0);
+    stroke(0);
+    textSize(10);
+    text("1...Show Points", 10, 300);
+    text("2...Show Convex hull", 10, 315);
+    text("3...Add Points", 10, 350);
 }
 
 void updatePoints(){
@@ -89,7 +104,7 @@ void updateVertex(){
             for(Point q: points){
                 if(q == p || q == capP) continue;
                 Point otherP = q.sub(capP); //これを比較。capから任意のotherに対して常に外積が正となるtryが頂点である。
-                if(tryP.x*otherP.y - tryP.y*otherP.x < 0) isConvex = false;
+                if(tryP.x*otherP.y - tryP.y*otherP.x <= 0) isConvex = false;
             }
             if(isConvex){
                 capP = p;
